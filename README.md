@@ -90,4 +90,23 @@ _________________________________________________
  const page = await browser.newPage();
 ```
 
+<br><br>
+
+## handle multiple pages
+```javascript
+(async () => {
+  const browser = await playwright.chromium.launch();
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  context.on("page", async newPage => {
+    console.log("newPage", await newPage.title())
+  })
+
+  // emulate some opening in a new tab or popup
+  await page.evaluate(() => window.open('https://google.com', '_blank'))
+  // Keep in mind to have some blocking action there so that the browser won't be closed. In this case we are just waiting 2 seconds.
+  await page.waitForTimeout(2000)
+  await browser.close();
+})();
+```
 
