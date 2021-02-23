@@ -10,7 +10,7 @@ Playwright Cheat Sheet with the most needed stuff..
 <br><br>
 
 # API
-- https://playwright.dev/docs/api/
+- https://playwright.dev/docs/api/class-playwright
 
 
 
