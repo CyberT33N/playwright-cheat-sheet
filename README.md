@@ -110,3 +110,67 @@ _________________________________________________
 })();
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br><br>
+_________________________________________________
+_________________________________________________
+<br><br>
+
+
+# Context
+
+
+<br><br>
+
+
+## Disable Javascript
+```javascript
+const browser = await playwright.chromium.launch();
+const context = await browser.newContext({
+  javaScriptEnabled: false
+});
+const page = await context.newPage();
+```
+
+
+
+
