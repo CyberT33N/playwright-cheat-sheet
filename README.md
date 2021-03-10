@@ -23,6 +23,12 @@ Playwright Cheat Sheet with the most needed stuff..
 
 
 
+
+
+
+
+
+
 <br><br>
 _________________________________________________
 _________________________________________________
@@ -39,6 +45,46 @@ const { chromium } = require('playwright');
   await browser.close();
 })();
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br><br>
+ _____________________________________________________
+ _____________________________________________________
+<br><br>
+
+
+
+# Browser
+
+<br><br>
+
+## .isConnected()
+- https://playwright.dev/docs/api/class-browser?_highlight=isconne#browserisconnected
+- Indicates that the browser is connected.
+```javascript
+const res = await browser.isConnected() // true or false
+```  
+
+
+
+
 
 
 
