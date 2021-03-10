@@ -64,6 +64,55 @@ const { chromium } = require('playwright');
 
 
 
+<br><br>
+ _____________________________________________________
+ _____________________________________________________
+<br><br>
+
+
+
+# Event Listener
+
+<br><br>
+
+## disconnected (https://playwright.dev/docs/api/class-browser?_highlight=discon#browserondisconnected)
+- Emitted when Browser gets disconnected from the browser application. This might happen because of one of the following:
+  - Browser application is closed or crashed.
+  - The browser.close() method was called.
+```bash
+browser.on('disconnected', doSomething())
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
