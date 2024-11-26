@@ -269,3 +269,32 @@ const page = await context.newPage();
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br><br>
+_________________________________________________
+_________________________________________________
+<br><br>
+
+
+# Code Generation
+- Create automated tests
+- https://playwright.dev/docs/codegen
+
+
+
+
+
