@@ -298,3 +298,45 @@ _________________________________________________
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br><br>
+_________________________________________________
+_________________________________________________
+<br><br>
+
+
+
+Playwright Test
+- Playwright Test provides a test function to declare tests and expect function to write assertions.
+
+```
+import { test, expect } from '@playwright/test';
+
+test('basic test', async ({ page }) => {
+  await page.goto('https://playwright.dev/');
+  const name = await page.innerText('.navbar__title');
+  expect(name).toBe('Playwright');
+});
+```
+
+<details><summary>Click to expand..</summary>
+
+
+
+</details>
