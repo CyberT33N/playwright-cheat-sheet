@@ -358,6 +358,7 @@ test('basic test', async ({ page }) => {
 <br><br>
 
 # Option 2 - Playwright inspector
+- Usefully for e.g. electron apps
 
 1. Create record.spec.ts
 ```
