@@ -660,7 +660,7 @@ Clear all Playwright caches.
 npx playwright clear-cache
 ```
   
-</details>details>
+</details>
 
 
 
