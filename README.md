@@ -9,8 +9,937 @@ Playwright Cheat Sheet with the most needed stuff..
 
 <br><br>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br><br>
+_________________________________________________
+_________________________________________________
+<br><br>
+
+
+
+
+
+
 # API
 - https://playwright.dev/docs/api/class-playwright
+
+
+<details><summary>Click to expand..</summary>
+
+
+<br><br>
+
+## Locator
+
+
+<details><summary>Click to expand..</summary>
+
+
+Locators sind das Herzstück von Playwrights Auto-Waiting und Retry-Fähigkeiten. Sie stellen eine Methode dar, um Elemente auf der Seite jederzeit zu finden. Ein Locator wird mit `page.locator()` erstellt.
+
+---
+
+## Methoden
+
+### `all()`
+*(Hinzugefügt in v1.29)*
+Gibt ein Array von Locators zurück, die auf die jeweiligen Elemente einer Liste zeigen.
+**Wichtig:** Wartet nicht, bis Elemente dem Locator entsprechen, sondern gibt sofort zurück, was vorhanden ist. Kann bei dynamischen Listen unvorhersehbar sein.
+
+```javascript
+for (const li of await page.getByRole('listitem').all()) {
+  await li.click();
+}
+// Gibt zurück: Promise<Array<Locator>>
+```
+
+---
+
+### `allInnerTexts()`
+*(Hinzugefügt in v1.14)*
+Gibt ein Array der `node.innerText`-Werte für alle übereinstimmenden Elemente zurück.
+**Hinweis:** Für Assertions `expect(locator).toHaveText()` mit `useInnerText` verwenden.
+
+```javascript
+const texts = await page.getByRole('link').allInnerTexts();
+// Gibt zurück: Promise<Array<string>>
+```
+
+---
+
+### `allTextContents()`
+*(Hinzugefügt in v1.14)*
+Gibt ein Array der `node.textContent`-Werte für alle übereinstimmenden Elemente zurück.
+**Hinweis:** Für Assertions `expect(locator).toHaveText()` verwenden.
+
+```javascript
+const texts = await page.getByRole('link').allTextContents();
+// Gibt zurück: Promise<Array<string>>
+```
+
+---
+
+### `and(locator)`
+*(Hinzugefügt in v1.34)*
+Erstellt einen Locator, der sowohl diesem Locator als auch dem Argument-Locator entspricht.
+
+```javascript
+const button = page.getByRole('button').and(page.getByTitle('Subscribe'));
+// Gibt zurück: Locator
+```
+
+---
+
+### `ariaSnapshot([options])`
+*(Hinzugefügt in v1.49)*
+Erfasst den ARIA-Snapshot des Elements (im YAML-Format).
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+await page.getByRole('link').ariaSnapshot();
+// Gibt zurück: Promise<string>
+```
+
+---
+
+### `blur([options])`
+*(Hinzugefügt in v1.28)*
+Ruft `blur` auf dem Element auf.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+await locator.blur();
+// Gibt zurück: Promise<void>
+```
+
+---
+
+### `boundingBox([options])`
+*(Hinzugefügt in v1.14)*
+Gibt die Bounding Box (Position und Größe) des Elements zurück, oder `null`, wenn nicht sichtbar. Relativ zum Viewport des Hauptframes.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+const box = await page.getByRole('button').boundingBox();
+// if (box) { await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2); }
+// Gibt zurück: Promise<null | { x: number, y: number, width: number, height: number }>
+```
+
+---
+
+### `check([options])`
+*(Hinzugefügt in v1.14)*
+Stellt sicher, dass ein Checkbox- oder Radio-Element ausgewählt ist.
+- `options.force`: Umgeht Actionability-Checks.
+- `options.position`: `{ x: number, y: number }` Klickposition relativ zur oberen linken Ecke.
+- `options.timeout`: Maximale Wartezeit in ms.
+- `options.trial`: Nur Actionability-Checks durchführen, keine Aktion.
+
+```javascript
+await page.getByRole('checkbox').check();
+// Gibt zurück: Promise<void>
+```
+
+---
+
+### `clear([options])`
+*(Hinzugefügt in v1.28)*
+Löscht den Inhalt eines Eingabefeldes.
+- `options.force`: Umgeht Actionability-Checks.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+await page.getByRole('textbox').clear();
+// Gibt zurück: Promise<void>
+```
+
+---
+
+### `click([options])`
+*(Hinzugefügt in v1.14)*
+Klickt auf ein Element.
+- `options.button`: `"left"` (Standard), `"right"`, `"middle"`.
+- `options.clickCount`: Anzahl der Klicks (Standard: 1).
+- `options.delay`: Zeit in ms zwischen `mousedown` und `mouseup` (Standard: 0).
+- `options.force`: Umgeht Actionability-Checks.
+- `options.modifiers`: Array von Tasten wie `["Shift", "Control"]`.
+- `options.noWaitAfter`: **VERALTET** (wird zukünftig `true`). Nicht auf Navigationen warten.
+- `options.position`: `{ x: number, y: number }` Klickposition.
+- `options.timeout`: Maximale Wartezeit in ms.
+- `options.trial`: Nur Actionability-Checks.
+
+```javascript
+await page.getByRole('button').click();
+await page.locator('canvas').click({ button: 'right', modifiers: ['Shift'] });
+// Gibt zurück: Promise<void>
+```
+
+---
+
+### `contentFrame()`
+*(Hinzugefügt in v1.43)*
+Gibt einen `FrameLocator` zurück, der auf denselben iFrame zeigt wie dieser Locator.
+
+```javascript
+const frameLocator = page.locator('iframe[name="embedded"]').contentFrame();
+await frameLocator.getByRole('button').click();
+// Gibt zurück: FrameLocator
+```
+
+---
+
+### `count()`
+*(Hinzugefügt in v1.14)*
+Gibt die Anzahl der Elemente zurück, die dem Locator entsprechen.
+**Hinweis:** Für Assertions `expect(locator).toHaveCount()` verwenden.
+
+```javascript
+const count = await page.getByRole('listitem').count();
+// Gibt zurück: Promise<number>
+```
+
+---
+
+### `dblclick([options])`
+*(Hinzugefügt in v1.14)*
+Doppelklickt auf ein Element. Optionen ähnlich wie `click()`.
+
+```javascript
+await locator.dblclick();
+// Gibt zurück: Promise<void>
+```
+
+---
+
+### `describe(description)`
+*(Hinzugefügt in v1.53)*
+Beschreibt den Locator für Trace Viewer und Reports. Gibt den Locator selbst zurück.
+
+```javascript
+locator.describe('Login Button');
+// Gibt zurück: Locator
+```
+
+---
+
+### `dispatchEvent(type[, eventInit, options])`
+*(Hinzugefügt in v1.14)*
+Löst ein DOM-Event programmatisch auf dem Element aus.
+- `type`: Event-Typ (z.B. `"click"`, `"dragstart"`).
+- `eventInit`: Event-spezifische Initialisierungseigenschaften.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+await locator.dispatchEvent('click');
+// Gibt zurück: Promise<void>
+```
+
+---
+
+### `dragTo(targetLocator[, options])`
+*(Hinzugefügt in v1.18)*
+Zieht das Quell-Element zum Ziel-Element und lässt es dort fallen.
+- `targetLocator`: Locator des Zielelements.
+- `options.force`: Umgeht Actionability-Checks.
+- `options.sourcePosition`: `{ x, y }` Startpunkt auf Quellelement.
+- `options.targetPosition`: `{ x, y }` Endpunkt auf Zielelement.
+- `options.timeout`: Maximale Wartezeit in ms.
+- `options.trial`: Nur Actionability-Checks.
+
+```javascript
+await sourceLocator.dragTo(targetLocator);
+// Gibt zurück: Promise<void>
+```
+
+---
+
+### `evaluate(pageFunction[, arg, options])`
+*(Hinzugefügt in v1.14)*
+Führt JavaScript-Code im Seitenkontext aus, wobei das übereinstimmende Element als Argument übergeben wird.
+- `pageFunction`: Funktion, die im Browser ausgeführt wird `(element, arg) => { ... }`.
+- `arg`: Optionales Argument für `pageFunction`.
+- `options.timeout`: Maximale Wartezeit auf den Locator in ms.
+
+```javascript
+const text = await locator.evaluate(element => element.textContent);
+// Gibt zurück: Promise<Serializable>
+```
+
+---
+
+### `evaluateAll(pageFunction[, arg])`
+*(Hinzugefügt in v1.14)*
+Führt JavaScript-Code im Seitenkontext aus, wobei ein Array aller übereinstimmenden Elemente als Argument übergeben wird.
+- `pageFunction`: Funktion `(elements, arg) => { ... }`.
+- `arg`: Optionales Argument für `pageFunction`.
+
+```javascript
+const count = await locator.evaluateAll(elements => elements.length);
+// Gibt zurück: Promise<Serializable>
+```
+
+---
+
+### `evaluateHandle(pageFunction[, arg, options])`
+*(Hinzugefügt in v1.14)*
+Wie `evaluate`, gibt aber ein `JSHandle` mit dem Ergebnis zurück.
+- `options.timeout`: Maximale Wartezeit auf den Locator in ms.
+
+```javascript
+const elementHandle = await locator.evaluateHandle(element => element);
+// Gibt zurück: Promise<JSHandle>
+```
+
+---
+
+### `fill(value[, options])`
+*(Hinzugefügt in v1.14)*
+Setzt einen Wert in ein Eingabefeld (`<input>`, `<textarea>`, `[contenteditable]`).
+- `value`: Einzugebender Text.
+- `options.force`: Umgeht Actionability-Checks.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+await page.getByRole('textbox').fill('Hallo Welt');
+// Gibt zurück: Promise<void>
+```
+
+---
+
+### `filter([options])`
+*(Hinzugefügt in v1.22)*
+Schränkt einen bestehenden Locator basierend auf Optionen ein.
+- `options.has`: Locator, der innerhalb des aktuellen Elements gefunden werden muss.
+- `options.hasNot`: Locator, der NICHT innerhalb des aktuellen Elements gefunden werden darf. *(v1.33)*
+- `options.hasText`: Text (string|RegExp), der im Element enthalten sein muss.
+- `options.hasNotText`: Text (string|RegExp), der NICHT im Element enthalten sein darf. *(v1.33)*
+- `options.visible`: `boolean` *(v1.51)* Nur sichtbare/unsichtbare Elemente.
+
+```javascript
+locator.filter({ hasText: 'Login' }).filter({ has: page.getByRole('button') });
+// Gibt zurück: Locator
+```
+
+---
+
+### `first()`
+*(Hinzugefügt in v1.14)*
+Gibt einen Locator für das erste übereinstimmende Element zurück.
+
+```javascript
+const firstItem = page.getByRole('listitem').first();
+// Gibt zurück: Locator
+```
+
+---
+
+### `focus([options])`
+*(Hinzugefügt in v1.14)*
+Setzt den Fokus auf das übereinstimmende Element.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+await locator.focus();
+// Gibt zurück: Promise<void>
+```
+
+---
+
+### `frameLocator(selector)`
+*(Hinzugefügt in v1.17)*
+Erstellt einen `FrameLocator`, um Elemente innerhalb eines iFrames zu lokalisieren. (Dies ist eine Methode von `Page` oder `FrameLocator`, nicht von `Locator` selbst, aber wichtig im Kontext).
+
+```javascript
+const frame = page.frameLocator('iframe#myFrame');
+await frame.getByText('Submit').click();
+// Gibt zurück: FrameLocator
+```
+
+---
+
+### `getAttribute(name[, options])`
+*(Hinzugefügt in v1.14)*
+Gibt den Attributwert des übereinstimmenden Elements zurück.
+**Hinweis:** Für Assertions `expect(locator).toHaveAttribute()` verwenden.
+- `name`: Attributname.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+const href = await locator.getAttribute('href');
+// Gibt zurück: Promise<null | string>
+```
+
+---
+
+### `getByAltText(text[, options])`
+*(Hinzugefügt in v1.27)*
+Findet Elemente anhand ihres `alt`-Textes (z.B. bei `<img>`).
+- `text`: `string | RegExp`.
+- `options.exact`: `boolean` (Standard: `false`) für exakte Übereinstimmung (Groß-/Kleinschreibung, ganzer String).
+
+```javascript
+await page.getByAltText('Playwright logo').click();
+// Gibt zurück: Locator
+```
+
+---
+
+### `getByLabel(text[, options])`
+*(Hinzugefügt in v1.27)*
+Findet Input-Elemente anhand des Textes des zugehörigen `<label>` oder `aria-labelledby` / `aria-label`.
+- `text`: `string | RegExp`.
+- `options.exact`: `boolean` (Standard: `false`).
+
+```javascript
+await page.getByLabel('Username').fill('john_doe');
+// Gibt zurück: Locator
+```
+
+---
+
+### `getByPlaceholder(text[, options])`
+*(Hinzugefügt in v1.27)*
+Findet Input-Elemente anhand ihres `placeholder`-Textes.
+- `text`: `string | RegExp`.
+- `options.exact`: `boolean` (Standard: `false`).
+
+```javascript
+await page.getByPlaceholder('name@example.com').fill('test@example.com');
+// Gibt zurück: Locator
+```
+
+---
+
+### `getByRole(role[, options])`
+*(Hinzugefügt in v1.27)*
+Findet Elemente anhand ihrer ARIA-Rolle, ARIA-Attribute und ihres zugänglichen Namens.
+- `role`: ARIA-Rolle (z.B. `"button"`, `"checkbox"`, `"heading"`).
+- `options.name`: `string | RegExp` (zugänglicher Name).
+- `options.checked`: `boolean` (Status für Checkbox/Radio).
+- `options.disabled`: `boolean`.
+- `options.exact`: `boolean` (für `name`, Standard: `false`). *(v1.28)*
+- `options.expanded`: `boolean`.
+- `options.includeHidden`: `boolean` (ob versteckte Elemente berücksichtigt werden).
+- `options.level`: `number` (z.B. für Überschriften `<h1>`-`<h6>`).
+- `options.pressed`: `boolean`.
+- `options.selected`: `boolean`.
+
+```javascript
+await page.getByRole('button', { name: /Submit/i }).click();
+// Gibt zurück: Locator
+```
+
+---
+
+### `getByTestId(testId)`
+*(Hinzugefügt in v1.27)*
+Findet Elemente anhand ihrer Test-ID (Standardattribut: `data-testid`).
+- `testId`: `string | RegExp`.
+**Hinweis:** Test-ID-Attribut kann via `selectors.setTestIdAttribute()` konfiguriert werden.
+
+```javascript
+await page.getByTestId('submit-button').click();
+// Gibt zurück: Locator
+```
+
+---
+
+### `getByText(text[, options])`
+*(Hinzugefügt in v1.27)*
+Findet Elemente, die den angegebenen Text enthalten. Whitespace wird normalisiert.
+- `text`: `string | RegExp`.
+- `options.exact`: `boolean` (Standard: `false`).
+
+```javascript
+await page.getByText('Hello world').click();
+await page.getByText('Hello', { exact: true }); // findet nur "Hello"
+// Gibt zurück: Locator
+```
+
+---
+
+### `getByTitle(text[, options])`
+*(Hinzugefügt in v1.27)*
+Findet Elemente anhand ihres `title`-Attributs.
+- `text`: `string | RegExp`.
+- `options.exact`: `boolean` (Standard: `false`).
+
+```javascript
+await expect(page.getByTitle('Issues count')).toHaveText('25 issues');
+// Gibt zurück: Locator
+```
+
+---
+
+### `highlight()`
+*(Hinzugefügt in v1.20)*
+Hebt das/die entsprechende(n) Element(e) auf dem Bildschirm hervor. Nützlich zum Debuggen.
+
+```javascript
+await locator.highlight();
+// Gibt zurück: Promise<void>
+```
+
+---
+
+### `hover([options])`
+*(Hinzugefügt in v1.14)*
+Bewegt den Mauszeiger über das übereinstimmende Element.
+- `options.force`: Umgeht Actionability-Checks.
+- `options.modifiers`: Array von Tasten.
+- `options.position`: `{ x, y }` Hover-Position.
+- `options.timeout`: Maximale Wartezeit in ms.
+- `options.trial`: Nur Actionability-Checks.
+
+```javascript
+await page.getByRole('link').hover();
+// Gibt zurück: Promise<void>
+```
+
+---
+
+### `innerHTML([options])`
+*(Hinzugefügt in v1.14)*
+Gibt `element.innerHTML` zurück.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+const html = await locator.innerHTML();
+// Gibt zurück: Promise<string>
+```
+
+---
+
+### `innerText([options])`
+*(Hinzugefügt in v1.14)*
+Gibt `element.innerText` zurück.
+**Hinweis:** Für Assertions `expect(locator).toHaveText({ useInnerText: true })` verwenden.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+const text = await locator.innerText();
+// Gibt zurück: Promise<string>
+```
+
+---
+
+### `inputValue([options])`
+*(Hinzugefügt in v1.14)*
+Gibt den Wert eines `<input>`, `<textarea>` oder `<select>` Elements zurück.
+**Hinweis:** Für Assertions `expect(locator).toHaveValue()` verwenden.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+const value = await page.getByRole('textbox').inputValue();
+// Gibt zurück: Promise<string>
+```
+
+---
+
+### `isChecked([options])`
+*(Hinzugefügt in v1.14)*
+Gibt zurück, ob das Element (Checkbox/Radio) ausgewählt ist.
+**Hinweis:** Für Assertions `expect(locator).toBeChecked()` verwenden.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+const checked = await page.getByRole('checkbox').isChecked();
+// Gibt zurück: Promise<boolean>
+```
+
+---
+
+### `isDisabled([options])`
+*(Hinzugefügt in v1.14)*
+Gibt zurück, ob das Element deaktiviert ist.
+**Hinweis:** Für Assertions `expect(locator).toBeDisabled()` verwenden.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+const disabled = await page.getByRole('button').isDisabled();
+// Gibt zurück: Promise<boolean>
+```
+
+---
+
+### `isEditable([options])`
+*(Hinzugefügt in v1.14)*
+Gibt zurück, ob das Element editierbar ist.
+**Hinweis:** Für Assertions `expect(locator).toBeEditable()` verwenden.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+const editable = await page.getByRole('textbox').isEditable();
+// Gibt zurück: Promise<boolean>
+```
+
+---
+
+### `isEnabled([options])`
+*(Hinzugefügt in v1.14)*
+Gibt zurück, ob das Element aktiviert ist.
+**Hinweis:** Für Assertions `expect(locator).toBeEnabled()` verwenden.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+const enabled = await page.getByRole('button').isEnabled();
+// Gibt zurück: Promise<boolean>
+```
+
+---
+
+### `isHidden([options])`
+*(Hinzugefügt in v1.14)*
+Gibt zurück, ob das Element versteckt ist. Wartet nicht.
+**Hinweis:** Für Assertions `expect(locator).toBeHidden()` verwenden.
+- `options.timeout`: **VERALTET** / Ignoriert.
+
+```javascript
+const hidden = await page.getByRole('button').isHidden();
+// Gibt zurück: Promise<boolean>
+```
+
+---
+
+### `isVisible([options])`
+*(Hinzugefügt in v1.14)*
+Gibt zurück, ob das Element sichtbar ist. Wartet nicht.
+**Hinweis:** Für Assertions `expect(locator).toBeVisible()` verwenden.
+- `options.timeout`: **VERALTET** / Ignoriert.
+
+```javascript
+const visible = await page.getByRole('button').isVisible();
+// Gibt zurück: Promise<boolean>
+```
+
+---
+
+### `last()`
+*(Hinzugefügt in v1.14)*
+Gibt einen Locator für das letzte übereinstimmende Element zurück.
+
+```javascript
+const lastItem = page.getByRole('listitem').last();
+// Gibt zurück: Locator
+```
+
+---
+
+### `locator(selectorOrLocator[, options])`
+*(Hinzugefügt in v1.14)*
+Findet ein Element, das dem angegebenen Selektor/Locator im Unterbaum des aktuellen Locators entspricht. Akzeptiert Filteroptionen wie `filter()`.
+- `selectorOrLocator`: `string | Locator`.
+- `options.has`, `options.hasNot`, `options.hasText`, `options.hasNotText`: Siehe `filter()`.
+
+```javascript
+const row = page.locator('tr:has-text("Produkt A")');
+const cellInRow = row.locator('td').nth(2);
+// Gibt zurück: Locator
+```
+
+---
+
+### `nth(index)`
+*(Hinzugefügt in v1.14)*
+Gibt einen Locator für das n-te übereinstimmende Element zurück (0-basiert).
+
+```javascript
+const thirdItem = page.getByRole('listitem').nth(2);
+// Gibt zurück: Locator
+```
+
+---
+
+### `or(locator)`
+*(Hinzugefügt in v1.33)*
+Erstellt einen Locator, der Elemente findet, die entweder diesem oder dem alternativen Locator entsprechen.
+**Achtung:** Kann zu Strict-Mode-Verletzungen führen, wenn beide Locators Elemente finden. Oft mit `.first()` kombinieren.
+
+```javascript
+const newEmail = page.getByRole('button', { name: 'New' });
+const dialog = page.getByText('Confirm security settings');
+await expect(newEmail.or(dialog).first()).toBeVisible();
+// Gibt zurück: Locator
+```
+
+---
+
+### `page()`
+*(Hinzugefügt in v1.19)*
+Gibt die Seite zurück, zu der dieser Locator gehört.
+
+```javascript
+const currentPage = locator.page();
+// Gibt zurück: Page
+```
+
+---
+
+### `press(key[, options])`
+*(Hinzugefügt in v1.14)*
+Fokussiert das Element und drückt eine Tastenkombination.
+- `key`: Taste (z.B. `"ArrowLeft"`, `"a"`, `"Control+Shift+T"`).
+- `options.delay`: Verzögerung in ms zwischen `keydown` und `keyup`.
+- `options.noWaitAfter`: **VERALTET**.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+await page.getByRole('textbox').press('Enter');
+// Gibt zurück: Promise<void>
+```
+
+---
+
+### `pressSequentially(text[, options])`
+*(Hinzugefügt in v1.38)*
+Fokussiert das Element und sendet Events für jedes Zeichen im Text.
+**Tipp:** Meist `locator.fill()` verwenden. Dies nur bei spezieller Tastaturbehandlung nötig.
+- `text`: Zu tippender Text.
+- `options.delay`: Verzögerung in ms zwischen Tastendrücken.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+await locator.pressSequentially('Hallo');
+// Gibt zurück: Promise<void>
+```
+
+---
+
+### `screenshot([options])`
+*(Hinzugefügt in v1.14)*
+Macht einen Screenshot des Elements.
+- `options.animations`: `"disabled"` | `"allow"` (Standard).
+- `options.caret`: `"hide"` (Standard) | `"initial"`.
+- `options.mask`: `Array<Locator>` zum Maskieren von Elementen.
+- `options.maskColor`: Farbe für Maskierung (Standard: `#FF00FF`). *(v1.35)*
+- `options.omitBackground`: `boolean` für transparente Screenshots (nicht für JPEG).
+- `options.path`: Dateipfad zum Speichern.
+- `options.quality`: Bildqualität 0-100 (für JPEG).
+- `options.scale`: `"css"` | `"device"` (Standard).
+- `options.style`: CSS-Stylesheet, das während des Screenshots angewendet wird. *(v1.41)*
+- `options.timeout`: Maximale Wartezeit in ms.
+- `options.type`: `"png"` (Standard) | `"jpeg"`.
+
+```javascript
+await page.getByRole('link').screenshot({ path: 'link.png' });
+// Gibt zurück: Promise<Buffer>
+```
+
+---
+
+### `scrollIntoViewIfNeeded([options])`
+*(Hinzugefügt in v1.14)*
+Scrollt das Element in den sichtbaren Bereich, falls es nicht vollständig sichtbar ist.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+await locator.scrollIntoViewIfNeeded();
+// Gibt zurück: Promise<void>
+```
+
+---
+
+### `selectOption(values[, options])`
+*(Hinzugefügt in v1.14)*
+Wählt eine oder mehrere Optionen in einem `<select>`-Element aus.
+- `values`: `string | Array<string> | Object | Array<Object> | null`. Kann `{ value: 'val' }`, `{ label: 'lbl' }`, `{ index: idx }` sein.
+- `options.force`: Umgeht Actionability-Checks.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+await locator.selectOption('blue'); // Nach Wert oder Label
+await locator.selectOption({ label: 'Green' });
+await locator.selectOption(['red', { value: 'blue' }]);
+// Gibt zurück: Promise<Array<string>> (Array der ausgewählten Werte)
+```
+
+---
+
+### `selectText([options])`
+*(Hinzugefügt in v1.14)*
+Fokussiert das Element und wählt dessen gesamten Textinhalt aus.
+- `options.force`: Umgeht Actionability-Checks.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+await locator.selectText();
+// Gibt zurück: Promise<void>
+```
+
+---
+
+### `setChecked(checked[, options])`
+*(Hinzugefügt in v1.15)*
+Setzt den Zustand eines Checkbox- oder Radio-Elements.
+- `checked`: `boolean`.
+- `options`: Ähnlich wie `check()`.
+
+```javascript
+await page.getByRole('checkbox').setChecked(true);
+// Gibt zurück: Promise<void>
+```
+
+---
+
+### `setInputFiles(files[, options])`
+*(Hinzugefügt in v1.14)*
+Lädt eine oder mehrere Dateien in ein `<input type=file>` hoch.
+- `files`: `string | Array<string> | Object | Array<Object>`.
+  - Objektformat: `{ name: string, mimeType: string, buffer: Buffer }`.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+await locator.setInputFiles('pfad/zur/datei.txt');
+await locator.setInputFiles([{ name: 'file.txt', mimeType: 'text/plain', buffer: Buffer.from('...') }]);
+// Gibt zurück: Promise<void>
+```
+
+---
+
+### `tap([options])`
+*(Hinzugefügt in v1.14)*
+Führt eine Tipp-Geste auf dem Element aus (für Touch-Emulation).
+**Hinweis:** Benötigt `hasTouch: true` im Browserkontext.
+- `options`: Ähnlich wie `click()`.
+
+```javascript
+await locator.tap();
+// Gibt zurück: Promise<void>
+```
+
+---
+
+### `textContent([options])`
+*(Hinzugefügt in v1.14)*
+Gibt `node.textContent` zurück.
+**Hinweis:** Für Assertions `expect(locator).toHaveText()` verwenden.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+const text = await locator.textContent();
+// Gibt zurück: Promise<null | string>
+```
+
+---
+
+### `uncheck([options])`
+*(Hinzugefügt in v1.14)*
+Stellt sicher, dass ein Checkbox- oder Radio-Element nicht ausgewählt ist.
+- `options`: Ähnlich wie `check()`.
+
+```javascript
+await page.getByRole('checkbox').uncheck();
+// Gibt zurück: Promise<void>
+```
+
+---
+
+### `waitFor([options])`
+*(Hinzugefügt in v1.16)*
+Wartet, bis das Element den angegebenen Zustand erfüllt.
+- `options.state`: `"attached"` | `"detached"` | `"visible"` (Standard) | `"hidden"`.
+- `options.timeout`: Maximale Wartezeit in ms.
+
+```javascript
+await locator.waitFor({ state: 'visible' });
+// Gibt zurück: Promise<void>
+```
+
+---
+
+## Veraltete Methoden
+
+### `elementHandle([options])`
+*(Hinzugefügt in v1.14)*
+**VERALTET!** Bevorzuge Locators und Web-Assertions.
+Löst den Locator zum ersten übereinstimmenden DOM-Element auf.
+- `options.timeout`: Maximale Wartezeit in ms.
+```javascript
+// Veraltet: const handle = await locator.elementHandle();
+// Gibt zurück: Promise<ElementHandle>
+```
+
+---
+
+### `elementHandles()`
+*(Hinzugefügt in v1.14)*
+**VERALTET!** Bevorzuge Locators und Web-Assertions.
+Löst den Locator zu allen übereinstimmenden DOM-Elementen auf.
+```javascript
+// Veraltet: const handles = await locator.elementHandles();
+// Gibt zurück: Promise<Array<ElementHandle>>
+```
+
+---
+
+### `type(text[, options])`
+*(Hinzugefügt in v1.14)*
+**VERALTET!** In den meisten Fällen `locator.fill()` verwenden. Für spezielle Tastatureingaben `locator.pressSequentially()`.
+Fokussiert das Element und sendet Events für jedes Zeichen.
+- `text`: Zu tippender Text.
+- `options.delay`: Verzögerung in ms zwischen Tastendrücken.
+- `options.timeout`: Maximale Wartezeit in ms.
+```javascript
+// Veraltet: await locator.type('Hallo');
+// Gibt zurück: Promise<void>
+```
+
+</details>
+
+
+
+
+
+
+
+
+
+</details>
+
+
+
+
+
+
 
 
 
